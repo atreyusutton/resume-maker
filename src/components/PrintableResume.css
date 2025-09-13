@@ -1,0 +1,397 @@
+/* Force letter size and margins */
+@page {
+  size: Letter;
+  margin: 0.25in;
+}
+
+/* Screen preview should emulate print page box */
+.print-page {
+  width: 8.5in;
+  min-height: 11in;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  margin: 16px auto;
+  background: white;
+  position: relative;
+}
+
+.resume-content {
+  width: 100%;
+  min-height: 100%;
+  padding: 0.25in;
+  box-sizing: border-box;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  line-height: calc(1em + 5px);
+  color: #1a202c;
+}
+
+/* Uniform spacing between sections (last one has none) */
+.resume-content > div {
+  margin-bottom: 20px;
+}
+
+.resume-content > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Print-only overrides */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .print-page {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    box-shadow: none;
+    margin: 0;
+    background-image: none;
+    overflow: visible;
+  }
+  
+  .resume-content {
+    padding: 0;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Avoid bad breaks */
+  .avoid-break {
+    break-inside: avoid;
+  }
+  
+  /* Allow sections to break across pages if needed, but avoid breaking items */
+  .section {
+    break-inside: auto;
+  }
+  
+  /* Keep individual items together */
+  .experience-item,
+  .project-item,
+  .education-item,
+  .other-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Keep section headers with at least some content */
+  .section-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  
+  /* Personal section should stay on first page */
+  .personal-section {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
+/* Personal Section */
+.personal-section {
+  text-align: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0;
+}
+
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 8px;
+  font-size: 13px;
+  color: #1a202c;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.contact-item:not(:last-child)::after {
+  content: '|';
+  margin-left: 8px;
+  color: #1a202c;
+}
+
+.contact-item a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 0;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.print-page .section-title,
+.resume-content .section-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a202c;
+  margin-bottom: 8px;
+  margin-top: 0;
+  padding-bottom: 0;
+  border-bottom: 2px solid #cbd5e0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  width: 100%;
+}
+
+.section-content {
+  font-size: 13px;
+  line-height: inherit;
+}
+
+/* Paragraph spacing inside section content (e.g., Objective) */
+.section-content p {
+  margin: 0 0 10px 0;
+}
+
+.section-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Experience Styles */
+.experience-item {
+  margin-bottom: 10px;
+}
+
+.experience-item:last-child {
+  margin-bottom: 0;
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.experience-title {
+  flex: 1;
+}
+
+.job-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 2px;
+  margin-top: 0;
+}
+
+.company {
+  font-size: 13px;
+  color: #1a202c;
+}
+
+.company a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.company a:hover {
+  text-decoration: underline;
+}
+
+.experience-details {
+  font-size: 13px;
+  color: #1a202c;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.bullet-list {
+  margin: 0 0 0 18px;
+  padding: 0;
+}
+
+.bullet-item {
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: inherit;
+}
+
+.bullet-item a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.bullet-item a:hover {
+  text-decoration: underline;
+}
+
+/* Skills Styles */
+.skills-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skill-category {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  line-height: inherit;
+}
+
+.skill-category-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a202c;
+  min-width: 90px;
+}
+
+.skills-list {
+  font-size: 13px;
+  color: #1a202c;
+  flex: 1;
+}
+
+/* Education Styles */
+.education-item {
+  margin-bottom: 10px;
+}
+
+.education-item:last-child {
+  margin-bottom: 0;
+}
+
+.education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.education-title {
+  flex: 1;
+}
+
+.school {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 2px;
+  margin-top: 0;
+}
+
+.degree {
+  font-size: 13px;
+  color: #1a202c;
+}
+
+.education-right {
+  text-align: right;
+  font-size: 13px;
+  color: #1a202c;
+}
+
+/* Projects Styles */
+.project-item {
+  margin-bottom: 10px;
+}
+
+.project-item:last-child {
+  margin-bottom: 0;
+}
+
+.project-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.project-skills {
+  font-size: 12px;
+  color: #1a202c;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+.project-description {
+  font-size: 13px;
+  line-height: inherit;
+}
+
+.project-description a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.project-description a:hover {
+  text-decoration: underline;
+}
+
+/* Other Styles */
+.other-item {
+  margin-bottom: 10px;
+}
+
+.other-item:last-child {
+  margin-bottom: 0;
+}
+
+.other-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.other-content {
+  font-size: 13px;
+  line-height: inherit;
+}
+
+.other-content a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.other-content a:hover {
+  text-decoration: underline;
+}
+
+/* Typography */
+strong {
+  font-weight: 600;
+}
+
+em {
+  font-style: italic;
+}
