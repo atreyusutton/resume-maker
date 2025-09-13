@@ -26,3 +26,6 @@ out/
 
 # Misc
 *.local
+
+# Cache
+.cache/
