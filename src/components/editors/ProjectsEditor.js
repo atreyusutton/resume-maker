@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import styled from 'styled-components';
 import MarkdownTextEditor from '../MarkdownTextEditor';
@@ -124,14 +124,31 @@ const AddButton = styled.button`
 `;
 
 function ProjectsEditor({ data, onChange }) {
+  const [localSkillsText, setLocalSkillsText] = useState({});
+
+  useEffect(() => {
+    const map = {};
+    data.forEach(project => {
+      map[project.id] = Array.isArray(project.skillsUsed) ? project.skillsUsed.join(', ') : '';
+    });
+    setLocalSkillsText(map);
+  }, [data]);
   const handleProjectChange = (index, field, value) => {
     const updatedData = [...data];
-    if (field === 'skillsUsed' && typeof value === 'string') {
-      // Convert comma-separated string to array
-      updatedData[index][field] = value.split(',').map(skill => skill.trim()).filter(skill => skill);
-    } else {
+    if (field !== 'skillsUsed') {
       updatedData[index][field] = value;
+      onChange(updatedData);
+      return;
     }
+    const projectId = updatedData[index].id;
+    setLocalSkillsText(prev => ({ ...prev, [projectId]: value }));
+  };
+
+  const commitSkills = (index) => {
+    const updatedData = [...data];
+    const projectId = updatedData[index].id;
+    const raw = localSkillsText[projectId] ?? '';
+    updatedData[index].skillsUsed = raw.split(',').map(s => s.trim()).filter(Boolean);
     onChange(updatedData);
   };
 
@@ -183,8 +200,9 @@ function ProjectsEditor({ data, onChange }) {
             <FormGroup>
               <Label>Skills Used</Label>
               <SkillsInput
-                value={project.skillsUsed.join(', ')}
+                value={localSkillsText[project.id] ?? project.skillsUsed.join(', ')}
                 onChange={(e) => handleProjectChange(index, 'skillsUsed', e.target.value)}
+                onBlur={() => commitSkills(index)}
                 placeholder="Enter skills separated by commas"
               />
               <HelpText>

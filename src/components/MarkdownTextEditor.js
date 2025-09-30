@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { marked } from 'marked';
 import styled from 'styled-components';
 import { getFontFamily } from '../styles/fonts';
@@ -42,7 +42,8 @@ const TextArea = styled.textarea`
   font-family: ${getFontFamily()};
   font-size: 14px;
   line-height: 1.5;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   cursor: text;
   user-select: text;
   
@@ -116,10 +117,22 @@ marked.setOptions({
 
 function MarkdownTextEditor({ value, onChange, placeholder, simple = false }) {
   const [activeTab, setActiveTab] = useState('write');
+  const textRef = useRef(null);
   
   const handleChange = (e) => {
+    // Preserve exact user input including trailing spaces
     onChange(e.target.value);
   };
+
+  const autoResize = (el) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    if (textRef.current) autoResize(textRef.current);
+  }, [value, activeTab]);
   
   // Parse markdown to HTML and remove wrapping <p> tags for simple content
   const parseMarkdown = (text) => {
@@ -155,8 +168,10 @@ function MarkdownTextEditor({ value, onChange, placeholder, simple = false }) {
       
       {activeTab === 'write' ? (
         <TextArea
+          ref={textRef}
           value={value || ''}
           onChange={handleChange}
+          onInput={(e) => autoResize(e.target)}
           placeholder={placeholder}
           simple={simple}
         />

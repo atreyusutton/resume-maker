@@ -45,6 +45,73 @@ const SectionsList = styled.div`
   gap: 16px;
 `;
 
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 16px;
+`;
+
+const IndexCol = styled.div`
+  position: sticky;
+  top: 16px;
+  height: max-content;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  width: max-content;
+`;
+
+const IndexHeader = styled.div`
+  padding: 10px 12px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+`;
+
+const IndexList = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const IndexLink = styled.button`
+  text-align: left;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #374151;
+  white-space: nowrap;
+  &:hover { background: #f8fafc; }
+`;
+
+const IndexActions = styled.div`
+  border-top: 1px solid #e2e8f0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+
+const ActionButton = styled.button`
+  width: 100%;
+  background: ${props => props.variant === 'save' ? '#10b981' : '#ef4444'};
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+`;
+
+const FloatingLeftControls = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+`;
+
 const getEditorComponent = (sectionType) => {
   const editors = {
     personal: PersonalEditor,
@@ -58,42 +125,60 @@ const getEditorComponent = (sectionType) => {
   return editors[sectionType] || null;
 };
 
-function EditorPanel({ resumeData, updateSection, toggleSectionEnabled, reorderSections }) {
+function EditorPanel({ resumeData, updateSection, toggleSectionEnabled, reorderSections, onReset, onSaveToCode }) {
   // Sort sections by order
   const sortedSections = Object.values(resumeData).sort((a, b) => a.order - b.order);
 
+  const handleJump = (id) => {
+    const el = document.getElementById(`section-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <EditorContainer>
-      <EditorTitle>
-        <EditorIcon>
-          <i className="fas fa-edit"></i>
-        </EditorIcon>
-        Resume Editor
-      </EditorTitle>
-      
-      <SectionsList>
-        {sortedSections.map((section, index) => {
-          const EditorComponent = getEditorComponent(section.type);
-          
-          return (
-            <DraggableSection
-              key={section.id}
-              index={index}
-              section={section}
-              sectionTitle={sectionTypes[section.type]}
-              onToggleEnabled={() => toggleSectionEnabled(section.id)}
-              onReorder={reorderSections}
-            >
-              {EditorComponent && (
-                <EditorComponent
-                  data={section.data}
-                  onChange={(newData) => updateSection(section.id, { data: newData })}
-                />
-              )}
-            </DraggableSection>
-          );
-        })}
-      </SectionsList>
+      {/* Top action bar removed per request */}
+
+      <Layout>
+        <IndexCol>
+          <IndexHeader>Sections</IndexHeader>
+          <IndexList>
+            {sortedSections.map((s) => (
+              <IndexLink key={s.id} onClick={() => handleJump(s.id)}>
+                {sectionTypes[s.type]}
+              </IndexLink>
+            ))}
+          </IndexList>
+          {/* Moved actions to floating controls at bottom-left */}
+        </IndexCol>
+
+        <SectionsList>
+          {sortedSections.map((section, index) => {
+            const EditorComponent = getEditorComponent(section.type);
+            
+            return (
+              <div id={`section-${section.id}`} key={section.id}>
+                <DraggableSection
+                  index={index}
+                  section={section}
+                  sectionTitle={sectionTypes[section.type]}
+                  onToggleEnabled={() => toggleSectionEnabled(section.id)}
+                  onReorder={reorderSections}
+                >
+                  {EditorComponent && (
+                    <EditorComponent
+                      data={section.data}
+                      onChange={(newData) => updateSection(section.id, { data: newData })}
+                    />
+                  )}
+                </DraggableSection>
+              </div>
+            );
+          })}
+        </SectionsList>
+      </Layout>
+      {/* Floating left controls removed; actions moved to preview panel */}
     </EditorContainer>
   );
 }

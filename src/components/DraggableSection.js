@@ -105,7 +105,8 @@ function DraggableSection({
   onReorder, 
   children 
 }) {
-  const ref = useRef(null);
+  const containerRef = useRef(null);
+  const dragHandleRef = useRef(null);
   const [isExpanded, setIsExpanded] = useState(true);
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -126,16 +127,16 @@ function DraggableSection({
     },
   });
 
-  // Combine drag and drop refs
-  drag(ref);
-  drop(ref);
-  preview(drop(ref));
+  // Restrict dragging to the handle; drop/preview on the container
+  drag(dragHandleRef);
+  drop(containerRef);
+  preview(drop(containerRef));
 
   return (
-    <SectionContainer ref={ref} isDragging={isDragging}>
+    <SectionContainer ref={containerRef} isDragging={isDragging}>
       <SectionHeader enabled={section.enabled}>
         <SectionTitleArea>
-          <DragHandle>
+          <DragHandle ref={dragHandleRef}>
             <i className="fas fa-grip-vertical"></i>
           </DragHandle>
           <SectionTitle enabled={section.enabled}>

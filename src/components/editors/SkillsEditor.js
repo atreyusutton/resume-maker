@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import styled from 'styled-components';
 import { getFontFamily } from '../../styles/fonts';
@@ -123,14 +123,35 @@ const AddButton = styled.button`
 `;
 
 function SkillsEditor({ data, onChange }) {
+  const [localSkillsText, setLocalSkillsText] = useState({});
+
+  useEffect(() => {
+    // Initialize local text map from data on mount/update
+    const map = {};
+    data.forEach(category => {
+      map[category.id] = Array.isArray(category.skills) ? category.skills.join(', ') : '';
+    });
+    setLocalSkillsText(map);
+  }, [data]);
+
   const handleCategoryChange = (index, field, value) => {
     const updatedData = [...data];
-    if (field === 'skills' && typeof value === 'string') {
-      // Convert comma-separated string to array
-      updatedData[index][field] = value.split(',').map(skill => skill.trim()).filter(skill => skill);
-    } else {
+    if (field !== 'skills') {
       updatedData[index][field] = value;
+      onChange(updatedData);
+      return;
     }
+    // For skills, update local text immediately for better typing UX
+    const categoryId = updatedData[index].id;
+    setLocalSkillsText(prev => ({ ...prev, [categoryId]: value }));
+  };
+
+  const commitSkills = (index) => {
+    const updatedData = [...data];
+    const categoryId = updatedData[index].id;
+    const raw = localSkillsText[categoryId] ?? '';
+    // Normalize on blur: split by comma, trim items, remove empties
+    updatedData[index].skills = raw.split(',').map(s => s.trim()).filter(Boolean);
     onChange(updatedData);
   };
 
@@ -181,8 +202,9 @@ function SkillsEditor({ data, onChange }) {
             <FormGroup>
               <Label>Skills</Label>
               <SkillsInput
-                value={category.skills.join(', ')}
+                value={localSkillsText[category.id] ?? category.skills.join(', ')}
                 onChange={(e) => handleCategoryChange(index, 'skills', e.target.value)}
+                onBlur={() => commitSkills(index)}
                 placeholder="Enter skills separated by commas (e.g., JavaScript, React, Node.js)"
               />
               <HelpText>

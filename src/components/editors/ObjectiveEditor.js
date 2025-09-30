@@ -39,7 +39,8 @@ const Textarea = styled.textarea`
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   min-height: 100px;
   font-family: ${getFontFamily()};
   transition: border-color 0.2s ease;
@@ -253,6 +254,7 @@ function ObjectiveEditor({ data, onChange }) {
               <Textarea
                 value={objective.content || ''}
                 onChange={(e) => handleObjectiveChange(index, 'content', e.target.value)}
+                onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = `${e.target.scrollHeight}px`; }}
                 placeholder="Write a brief statement about your career goals and what you hope to achieve in this role..."
               />
               <HelpText>
